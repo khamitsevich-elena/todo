@@ -1,6 +1,6 @@
 const localStorageHelpers = {
   get: () => localStorage.getItem("token"),
-  set: (json) => localStorage.setItem("token", json),
+  set: (data) => localStorage.setItem("token", data),
 };
 
 export { localStorageHelpers };

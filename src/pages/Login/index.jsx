@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import { localStorageHelpers } from "../../helpers/localStorageHelpers";
 
+import { Link } from "react-router";
+
 const Login = () => {
   const [data, setData] = useState({});
   const navigate = useNavigate();
@@ -46,6 +48,7 @@ const Login = () => {
         onChange={(e) => func(e)}
       ></input>
       <button onClick={() => submit(data)}>Submit</button>
+      <Link to="/registration">Регистрация</Link>
     </>
   );
 };

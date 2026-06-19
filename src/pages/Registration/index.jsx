@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, Link } from "react-router";
 import { localStorageHelpers } from "../../helpers/localStorageHelpers";
 
 const Registration = () => {
@@ -27,7 +27,7 @@ const Registration = () => {
       });
       const data1 = await response.json();
       localStorageHelpers.set(data1["access_token"]);
-      if (localStorageHelpers.set()) {
+      if (localStorageHelpers.get()) {
         linkToEnter();
       }
       return data1;
@@ -50,6 +50,7 @@ const Registration = () => {
         onChange={(e) => func(e)}
       ></input>
       <button onClick={() => submit(data)}>Submit</button>
+      <Link to="/login">Залогиниться</Link>
     </>
   );
 };
