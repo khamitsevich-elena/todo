@@ -1,36 +1,11 @@
 import { useState } from "react";
-import { localStorageHelpers } from "../../helpers/localStorageHelpers";
+import { createTodo } from "../../api/todos";
 
-function AddTask({ setTodos }) {
+function AddTask({ setTodos, edit, setEdit }) {
   const [task, setTask] = useState({ title: "", description: "" });
+
   const handlechange = (e) => {
     setTask((task) => ({ ...task, [e.target.name]: e.target.value }));
-  };
-  const createTask = async () => {
-    try {
-      const response = await fetch(`${import.meta.env.VITE_URL}`, {
-        method: "POST",
-        headers: {
-          accept: "application/json",
-          Authorization: `Bearer ${localStorageHelpers.get()}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(task),
-      });
-      const data = await response.json();
-      if (response.ok) {
-        setTodos((tasks) => {
-          if (tasks) {
-            return [data, ...tasks];
-          } else {
-            return [data];
-          }
-        });
-      }
-    } catch (error) {
-      console.log(error);
-    }
-    setTask({ title: "", description: "" });
   };
 
   return (
@@ -41,7 +16,11 @@ function AddTask({ setTodos }) {
         value={task.description}
         onChange={handlechange}
       ></input>
-      <button onClick={createTask}>Submit</button>
+      <button
+        onClick={() => createTodo(task, setTodos, setTask, edit, setEdit)}
+      >
+        Submit
+      </button>
     </div>
   );
 }

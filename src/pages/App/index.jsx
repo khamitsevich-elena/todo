@@ -7,38 +7,22 @@ import { Routes, Route, Link, useNavigate } from "react-router";
 import PrivateRoute from "../../components/PrivateRoute";
 import FilteredTodos from "../../components/FilteredTodos";
 import { localStorageHelpers } from "../../helpers/localStorageHelpers";
+import { getTodos } from "../../api/todos";
 
 function App() {
+  const [edit, setEdit] = useState(false);
   const navigate = useNavigate();
   const linkToMainPage = () => {
-    localStorage.removeItem("token");
+    localStorageHelpers.delete();
     navigate("/");
   };
+
   const [todos, setTodos] = useState([]);
-  const [isDone, setIsDone] = useState([]);
+
   useEffect(() => {
-    const func = async () => {
-      if (localStorageHelpers.get()) {
-        try {
-          const response = await fetch(`${import.meta.env.VITE_URL}`, {
-            method: "GET",
-            headers: {
-              accept: "application/json",
-              Authorization: `Bearer ${localStorageHelpers.get()}`,
-            },
-          });
-          const todos = await response.json();
-          if (response.ok) {
-            setTodos(todos.data);
-            setIsDone(todos.data.map((item) => item.completed));
-          }
-        } catch (error) {
-          console.log(error);
-        }
-      }
-    };
-    func();
+    getTodos(setTodos);
   }, []);
+
   return (
     <>
       <Routes>
@@ -59,12 +43,12 @@ function App() {
             path="/Tasks"
             element={
               <>
-                <AddTask setTodos={setTodos} />
+                <AddTask edit={edit} setEdit={setEdit} setTodos={setTodos} />
                 <FilteredTodos
+                  edit={edit}
+                  setEdit={setEdit}
                   todos={todos}
                   setTodos={setTodos}
-                  isDone={isDone}
-                  setIsDone={setIsDone}
                 />
                 <button onClick={linkToMainPage}>Выйти</button>
               </>

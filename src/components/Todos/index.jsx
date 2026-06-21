@@ -1,93 +1,31 @@
-import { localStorageHelpers } from "../../helpers/localStorageHelpers";
 import EditTask from "../EditTask";
+import { handleDelete, handleDone } from "../../api/todos";
 
-const Todo = ({ todos, setTodos, edit, setEdit, isDone, setIsDone }) => {
-  const handleDelete = async (e) => {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_URL}/${e.target.id}`,
-        {
-          method: "DELETE",
-          headers: {
-            accept: "application/json",
-            Authorization: `Bearer ${localStorageHelpers.get()}`,
-          },
-        }
-      );
-      setTodos((todos) => [
-        ...todos.filter((item) => !(item.id == e.target.id)),
-      ]);
-    } catch (error) {
-      console.log(error);
-    }
+const Todo = ({ todos, setTodos, edit, setEdit }) => {
+  const obj = {
+    edit: edit,
+    setEdit: setEdit,
+    todos: todos,
+    setTodos: setTodos,
   };
 
-  const handleDone = async (e) => {
-    setIsDone((isDone) =>
-      isDone.map((item, index) => {
-        if (index == e.target.value) {
-          return !item;
-        }
-        return item;
-      })
-    );
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_URL}/${e.target.id}`,
-        {
-          method: "PATCH",
-          headers: {
-            accept: "application/json",
-            Authorization: `Bearer ${localStorageHelpers.get()}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            completed: e.target.checked,
-          }),
-        }
-      );
-      const data = await response.json();
-      setTodos((todos) => [
-        ...todos.map((item) => {
-          if (item.id == e.target.id) {
-            return { ...item, completed: e.target.checked };
-          } else {
-            return { ...item };
-          }
-        }),
-      ]);
-      setEdit((edit) => !edit);
-      return data;
-    } catch (error) {
-      console.log(error);
-    }
-  };
   return todos.length != 0 ? (
     <>
       {
         <div>
-          {todos.map((item, index) => (
+          {todos.map((item) => (
             <li key={item.id}>
               <input
-                value={index}
                 type="checkbox"
-                checked={isDone[index] || false}
-                onChange={(e) => handleDone(e)}
-                id={item.id}
+                checked={item.completed || false}
+                onChange={(e) => handleDone(e, item.id, setEdit)}
               ></input>
               <p>{item.title}</p>
               <span>{item.description}</span>
               <br></br>
-              <button id={item.id} onClick={(e) => handleDelete(e)}>
-                🗑
-              </button>
-              <EditTask
-                edit={edit}
-                setEdit={setEdit}
-                id={item.id}
-                todos={todos}
-                setTodos={setTodos}
-              />
+              <button onClick={() => handleDelete(item.id, setTodos)}>🗑</button>
+
+              <EditTask {...obj} id={item.id} />
               <hr />
             </li>
           ))}

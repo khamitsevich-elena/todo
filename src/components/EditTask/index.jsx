@@ -1,45 +1,20 @@
 import React, { useState } from "react";
 import { Button, Modal } from "antd";
-import { localStorageHelpers } from "../../helpers/localStorageHelpers";
+import { editTodo } from "../../api/todos";
 
-const EditTask = ({ todos, id, setTodos, edit, setEdit }) => {
+const EditTask = ({ todos, id, setEdit }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editTask, setEditTask] = useState(
     todos.filter((item) => item.id == id)[0]
   );
 
-  const func = (e) => {
-    setEditTask((editTask) => ({
-      ...editTask,
-      [e.target.name]: e.target.value,
-    }));
-  };
-  const editFunc = async () => {
-    try {
-      const response = await fetch(`${import.meta.env.VITE_URL}/${id}`, {
-        method: "PATCH",
-        headers: {
-          accept: "*/*",
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorageHelpers.get()}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(editTask),
-      });
-      const data = await response.json();
-      setEdit((edit) => !edit);
-      return data;
-    } catch (error) {
-      console.log(error);
-    }
-  };
   const showModal = () => {
     setIsModalOpen(true);
   };
 
   const handleOk = () => {
     setIsModalOpen(false);
-    editFunc();
+    editTodo(id, editTask, setEdit);
   };
 
   const handleCancel = () => {
@@ -60,17 +35,27 @@ const EditTask = ({ todos, id, setTodos, edit, setEdit }) => {
           Заголовок
           <input
             value={editTask.title}
-            onChange={(e) => func(e)}
+            onChange={(e) =>
+              setEditTask((editTask) => ({
+                ...editTask,
+                [e.target.name]: e.target.value,
+              }))
+            }
             name="title"
-          ></input>
+          />
         </p>
         <p>
           Описание
           <input
             value={editTask.description}
-            onChange={(e) => func(e)}
+            onChange={(e) =>
+              setEditTask((editTask) => ({
+                ...editTask,
+                [e.target.name]: e.target.value,
+              }))
+            }
             name="description"
-          ></input>
+          />
         </p>
       </Modal>
     </>
