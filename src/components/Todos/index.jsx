@@ -1,14 +1,19 @@
 import EditTask from "../EditTask";
-import { handleDelete, handleDone } from "../../api/todos";
+import { deleteTodo, doneTodo } from "../../api/todos";
 
-const Todo = ({ todos, setTodos, edit, setEdit }) => {
-  const obj = {
-    edit: edit,
-    setEdit: setEdit,
-    todos: todos,
-    setTodos: setTodos,
+const Todo = ({ todos, setTodos }) => {
+  const handleDone = (e, id) => {
+    setTodos((todos) => [
+      ...todos.map((item) =>
+        item.id === id ? { ...item, completed: e.target.checked } : item
+      ),
+    ]);
+    doneTodo(e, id);
   };
-
+  const handleDelete = (id) => {
+    deleteTodo(id);
+    setTodos((todos) => [...todos.filter((item) => !(item.id == id))]);
+  };
   return todos.length != 0 ? (
     <>
       {
@@ -18,14 +23,13 @@ const Todo = ({ todos, setTodos, edit, setEdit }) => {
               <input
                 type="checkbox"
                 checked={item.completed || false}
-                onChange={(e) => handleDone(e, item.id, setEdit)}
+                onChange={(e) => handleDone(e, item.id)}
               ></input>
               <p>{item.title}</p>
               <span>{item.description}</span>
               <br></br>
-              <button onClick={() => handleDelete(item.id, setTodos)}>🗑</button>
-
-              <EditTask {...obj} id={item.id} />
+              <button onClick={() => handleDelete(item.id)}>🗑</button>
+              <EditTask todos={todos} setTodos={setTodos} id={item.id} />
               <hr />
             </li>
           ))}

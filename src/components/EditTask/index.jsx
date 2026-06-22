@@ -2,19 +2,21 @@ import React, { useState } from "react";
 import { Button, Modal } from "antd";
 import { editTodo } from "../../api/todos";
 
-const EditTask = ({ todos, id, setEdit }) => {
+const EditTask = ({ todos, id, setTodos }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editTask, setEditTask] = useState(
-    todos.filter((item) => item.id == id)[0]
-  );
+  const [editTask, setEditTask] = useState({});
 
   const showModal = () => {
     setIsModalOpen(true);
+    setEditTask(todos.filter((item) => item.id == id)[0]);
   };
 
   const handleOk = () => {
     setIsModalOpen(false);
-    editTodo(id, editTask, setEdit);
+    editTodo(editTask.id, editTask);
+    setTodos((todos) =>
+      todos.map((item) => (item.id == editTask.id ? editTask : item))
+    );
   };
 
   const handleCancel = () => {

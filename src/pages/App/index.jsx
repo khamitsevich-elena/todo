@@ -10,7 +10,6 @@ import { localStorageHelpers } from "../../helpers/localStorageHelpers";
 import { getTodos } from "../../api/todos";
 
 function App() {
-  const [edit, setEdit] = useState(false);
   const navigate = useNavigate();
   const linkToMainPage = () => {
     localStorageHelpers.delete();
@@ -20,8 +19,11 @@ function App() {
   const [todos, setTodos] = useState([]);
 
   useEffect(() => {
-    getTodos(setTodos);
-  }, []);
+    const todos = getTodos();
+    if (todos.ok) {
+      setTodos(todos.data);
+    }
+  }, [todos]);
 
   return (
     <>
@@ -30,7 +32,6 @@ function App() {
           path="/"
           element={
             <>
-              {" "}
               <Link to="/registration">Регистрация</Link>
               <Link to="/login">Вход</Link>
             </>
@@ -43,13 +44,8 @@ function App() {
             path="/Tasks"
             element={
               <>
-                <AddTask edit={edit} setEdit={setEdit} setTodos={setTodos} />
-                <FilteredTodos
-                  edit={edit}
-                  setEdit={setEdit}
-                  todos={todos}
-                  setTodos={setTodos}
-                />
+                <AddTask setTodos={setTodos} />
+                <FilteredTodos todos={todos} setTodos={setTodos} />
                 <button onClick={linkToMainPage}>Выйти</button>
               </>
             }

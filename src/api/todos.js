@@ -1,6 +1,6 @@
 import { localStorageHelpers } from "../helpers/localStorageHelpers";
 
-const getTodos = async (setTodos) => {
+const getTodos = async () => {
   if (localStorageHelpers.get()) {
     try {
       const response = await fetch(`${import.meta.env.VITE_URL}/todos`, {
@@ -10,17 +10,33 @@ const getTodos = async (setTodos) => {
           Authorization: `Bearer ${localStorageHelpers.get()}`,
         },
       });
-      const todos = await response.json();
-      if (response.ok) {
-        setTodos(todos.data);
-      }
+      const data = await response.json();
+      return data;
     } catch (error) {
       console.log(error);
     }
   }
 };
 
-const handleDelete = async (id, setTodos) => {
+const createTodo = async (task) => {
+  try {
+    const response = await fetch(`${import.meta.env.VITE_URL}/todos`, {
+      method: "POST",
+      headers: {
+        accept: "application/json",
+        Authorization: `Bearer ${localStorageHelpers.get()}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(task),
+    });
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const deleteTodo = async (id) => {
   try {
     const response = await fetch(`${import.meta.env.VITE_URL}/todos/${id}`, {
       method: "DELETE",
@@ -29,13 +45,14 @@ const handleDelete = async (id, setTodos) => {
         Authorization: `Bearer ${localStorageHelpers.get()}`,
       },
     });
-    setTodos((todos) => [...todos.filter((item) => !(item.id == id))]);
+    const data = await response.json();
+    return data;
   } catch (error) {
     console.log(error);
   }
 };
 
-const handleDone = async (e, id, setEdit) => {
+const doneTodo = async (e, id) => {
   try {
     const response = await fetch(`${import.meta.env.VITE_URL}/todos/${id}`, {
       method: "PATCH",
@@ -49,35 +66,14 @@ const handleDone = async (e, id, setEdit) => {
         completed: e.target.checked,
       }),
     });
-    setEdit((edit) => !edit);
+    const data = await response.json();
+    return data.data;
   } catch (error) {
     console.log(error);
   }
 };
 
-const getFilteredTodos = async (filter, setTodos) => {
-  if (localStorageHelpers.get()) {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_URL}/todos${filter}`,
-        {
-          method: "GET",
-          headers: {
-            accept: "application/json",
-            Authorization: `Bearer ${localStorageHelpers.get()}`,
-          },
-        }
-      );
-      const todos = await response.json();
-      setTodos(todos.data);
-      return todos.data;
-    } catch (error) {
-      console.log(error);
-    }
-  }
-};
-
-const editTodo = async (id, editTask, setEdit) => {
+const editTodo = async (id, editTask) => {
   try {
     const response = await fetch(`${import.meta.env.VITE_URL}/todos/${id}`, {
       method: "PATCH",
@@ -90,45 +86,38 @@ const editTodo = async (id, editTask, setEdit) => {
       body: JSON.stringify(editTask),
     });
     const data = await response.json();
-    setEdit((edit) => !edit);
     return data;
   } catch (error) {
     console.log(error);
   }
 };
 
-const createTodo = async (task, setTodos, setTask, edit, setEdit) => {
-  try {
-    const response = await fetch(`${import.meta.env.VITE_URL}/todos`, {
-      method: "POST",
-      headers: {
-        accept: "application/json",
-        Authorization: `Bearer ${localStorageHelpers.get()}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(task),
-    });
-    const data = await response.json();
-    if (response.ok) {
-      setTodos((tasks) => {
-        if (tasks) {
-          return [data, ...tasks];
-        } else {
-          return [data];
+const getFilteredTodos = async (filter) => {
+  if (localStorageHelpers.get()) {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_URL}/todos${filter}`,
+        {
+          method: "GET",
+          headers: {
+            accept: "application/json",
+            Authorization: `Bearer ${localStorageHelpers.get()}`,
+          },
         }
-      });
+      );
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.log(error);
     }
-  } catch (error) {
-    console.log(error);
   }
-  setEdit((edit) => !edit);
-  setTask({ title: "", description: "" });
 };
+
 export {
   getTodos,
-  handleDelete,
-  handleDone,
+  createTodo,
+  deleteTodo,
+  doneTodo,
   getFilteredTodos,
   editTodo,
-  createTodo,
 };

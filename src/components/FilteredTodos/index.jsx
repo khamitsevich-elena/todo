@@ -4,19 +4,16 @@ import Todo from "../Todos";
 import { useSearchParams } from "react-router";
 import { getFilteredTodos } from "../../api/todos";
 
-const FilteredTodos = ({ todos, setTodos, edit, setEdit }) => {
+const FilteredTodos = ({ todos, setTodos }) => {
   const [filter, setFilter] = useState("");
   const [searchParams, setSearchParams] = useSearchParams();
-
-  const obj = {
-    todos: todos,
-    setTodos: setTodos,
-    edit: edit,
-    setEdit: setEdit,
+  const filteredTodoFunc = async () => {
+    const filteredTodo = await getFilteredTodos(filter);
+    setTodos(filteredTodo.data);
   };
   useEffect(() => {
-    getFilteredTodos(filter, setTodos);
-  }, [filter, edit]);
+    filteredTodoFunc();
+  }, [filter]);
 
   const onChange = (key) => {
     switch (key) {
@@ -39,17 +36,21 @@ const FilteredTodos = ({ todos, setTodos, edit, setEdit }) => {
     {
       key: "1",
       label: "ALL",
-      children: <Todo {...obj} filter={""} />,
+      children: <Todo todos={todos} setTodos={setTodos} filter={""} />,
     },
     {
       key: "2",
       label: "Checked",
-      children: <Todo {...obj} filter={"?completed=true"} />,
+      children: (
+        <Todo todos={todos} setTodos={setTodos} filter={"?completed=true"} />
+      ),
     },
     {
       key: "3",
       label: "Not Finished",
-      children: <Todo {...obj} filter={"?completed=false"} />,
+      children: (
+        <Todo todos={todos} setTodos={setTodos} filter={"?completed=false"} />
+      ),
     },
   ];
   return <Tabs defaultActiveKey="1" items={items} onChange={onChange} />;
