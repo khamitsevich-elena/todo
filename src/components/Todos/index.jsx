@@ -1,14 +1,15 @@
 import EditTask from "../EditTask";
 import { deleteTodo, doneTodo } from "../../api/todos";
 
-const Todo = ({ todos, setTodos }) => {
-  const handleDone = (e, id) => {
+const Todo = ({ todos, setTodos, filter, filteredTodoFunc }) => {
+  const handleDone = async (e, id) => {
     setTodos((todos) => [
       ...todos.map((item) =>
         item.id === id ? { ...item, completed: e.target.checked } : item
       ),
     ]);
-    doneTodo(e, id);
+    await doneTodo(e, id);
+    filteredTodoFunc(filter);
   };
   const handleDelete = (id) => {
     deleteTodo(id);

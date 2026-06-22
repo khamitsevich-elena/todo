@@ -36,20 +36,37 @@ const FilteredTodos = ({ todos, setTodos }) => {
     {
       key: "1",
       label: "ALL",
-      children: <Todo todos={todos} setTodos={setTodos} filter={""} />,
+      children: (
+        <Todo
+          filter={filter}
+          filteredTodoFunc={filteredTodoFunc}
+          todos={todos}
+          setTodos={setTodos}
+        />
+      ),
     },
     {
       key: "2",
       label: "Checked",
       children: (
-        <Todo todos={todos} setTodos={setTodos} filter={"?completed=true"} />
+        <Todo
+          filter={filter}
+          filteredTodoFunc={filteredTodoFunc}
+          todos={todos}
+          setTodos={setTodos}
+        />
       ),
     },
     {
       key: "3",
       label: "Not Finished",
       children: (
-        <Todo todos={todos} setTodos={setTodos} filter={"?completed=false"} />
+        <Todo
+          filter={filter}
+          filteredTodoFunc={filteredTodoFunc}
+          todos={todos}
+          setTodos={setTodos}
+        />
       ),
     },
   ];
